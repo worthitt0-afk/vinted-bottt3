@@ -25,26 +25,23 @@ LE_TUE_RICERCHE = [
 async def check_vinted():
     print("🔄 Scansionando Vinted...")
     try:
-        async with aiohttp.ClientSession() as session:
-            for ricerca in LE_TUE_RICERCHE:
-                try:
-                    async with session.get(ricerca["url"], headers={'User-Agent': 'Mozilla/5.0'}) as response:
-                        if response.status == 200:
-                            html = await response.text()
-                            soup = BeautifulSoup(html, 'html.parser')
-                            items = soup.find_all('div', {'class': 'feed-grid__item'})
-                            if items:
-                                print(f"✅ Trovati {len(items)} articoli per {ricerca['name']}")
-                            else:
-                                print(f"❌ Nessun articolo trovato per {ricerca['name']}")
-                        else:
-                            print(f"❌ Errore HTTP {response.status} per {ricerca['name']}")
-                except Exception as e:
-                    print(f"❌ Errore per {ricerca['name']}: {str(e)}")
-                await asyncio.sleep(1)
+        for ricerca in LE_TUE_RICERCHE:
+            try:
+                response = requests.get(ricerca["url"], headers={'User-Agent': 'Mozilla/5.0'})
+                if response.status_code == 200:
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    items = soup.find_all('div', {'class': 'feed-grid__item'})
+                    if items:
+                        print(f"✅ Trovati {len(items)} articoli per {ricerca['name']}")
+                    else:
+                        print(f"❌ Nessun articolo trovato per {ricerca['name']}")
+                else:
+                    print(f"❌ Errore HTTP {response.status_code} per {ricerca['name']}")
+            except Exception as e:
+                print(f"❌ Errore per {ricerca['name']}: {str(e)}")
+            time.sleep(1)
     except Exception as e:
         print(f"❌ Errore generale: {str(e)}")
-
 @bot.event
 async def on_ready():
     print(f'✅ Bot {bot.user} è online!')
