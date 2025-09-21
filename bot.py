@@ -1,7 +1,7 @@
 import discord
 import os
-import aiohttp
-import asyncio
+import requests
+import time
 from discord.ext import tasks
 from bs4 import BeautifulSoup
 
